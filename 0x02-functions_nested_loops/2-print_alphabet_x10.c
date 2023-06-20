@@ -18,5 +18,4 @@ void print_alphabet_10x(void)
 		i++;
 		_putchar('\n');
 	}
-	return (0);
 }
