@@ -1,6 +1,6 @@
 #include "main.h"
 /**
- * print_alphabet_10x - prints the alphabet 10 times
+ * print_alphabet_x10 - prints the alphabet 10 times
  * Return: void (nothing)
  */
 void print_alphabet_x10(void)
@@ -8,12 +8,12 @@ void print_alphabet_x10(void)
 	int i;
 	char j;
 
-  for (i = 0; i < 10; i++)
-  {
-	for (j = 'a'; j <= 'z'; j++)
+	for (i = 0; i < 10; i++)
 	{
-		_putchar(j);
+		for (j = 'a'; j <= 'z'; j++)
+		{
+			_putchar(j);
+		}
+		_putchar('\n');
 	}
-	_putchar('\n');
-  }
 }
