@@ -2,10 +2,10 @@
 #include <string.h>
 unsigned int _strlen(const char *s);
 /**
- *add_node_end - adds a new node at the end of a list_t
- *@head: input of type list_t
- *@str: input of type str
- *Return: a new node of type list_t
+ *add_node_end - adds a new node
+ *@head: head
+ *@str: value
+ *Return: a new node
  */
 list_t *add_node_end(list_t **head, const char *str)
 {
