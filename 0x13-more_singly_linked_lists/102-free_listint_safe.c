@@ -1,34 +1,77 @@
-#include <stdlib.h>
 #include "lists.h"
+#include <stdio.h>
+#include <stdlib.h>
+/**
+ * detect_loop - Function that detects if there is a loop
+ * @h: Adrdress of head of the linked list
+ * Return: Number of length if is true or 0 if is false
+ */
+int detect_loop(listint_t *h)
+{
+	listint_t *slow, *fast;
+	int i;
+
+	slow = h, fast = h;
+
+	for (i = 1; slow && fast && fast->next; i++)
+	{
+		slow = slow->next, fast = fast->next->next;
+
+		if (slow == fast)
+			return (i);
+	}
+
+	return (0);
+}
 
 /**
- * free_listint_safe - Frees a listint_t linked list.
- * @h: A pointer to a pointer to the head node of the listint_t list.
- *
- * Return: The size of the list that was freed.
+ * remove_loop - Function that removes loop in a linked list
+ * @h: Head addfress of the linked list
+ * @n: lenth of the loop
+ */
+void remove_loop(listint_t **h, int n)
+{
+	listint_t *ptr1, *ptr2;
+
+	ptr1 = *h, ptr2 = *h;
+
+	for (; n > 0; n--)
+		ptr1 = ptr1->next;
+
+	while (1)
+	{
+		ptr1 = ptr1->next, ptr2 = ptr2->next;
+
+		if (ptr1->next == ptr2->next)
+		{
+			ptr1->next = NULL;
+			return;
+		}
+	}
+}
+
+/**
+ * free_listint_safe - Function that frees a linked list
+ * @h: Head of the linked list
+ * Return: The size of the list that was free
  */
 size_t free_listint_safe(listint_t **h)
 {
-	size_t count = 0;
-	listint_t *node, *next_node;
+	listint_t *t;
+	int n;
 
-	if (h == NULL)
-		return (0);
+	if (h == NULL || *h == NULL)
+		printf("0\n(nil)\n"), exit(98);
 
-	node = *h;
-	while (node != NULL)
-	{
-		count++;
-		next_node = node->next;
-		free(node);
-		if (next_node >= node)
-		{
-			*h = NULL;
-			return (count);
-		}
-		node = next_node;
-	}
+	n = detect_loop(*h);
+
+	if (n != 0)
+		remove_loop(h, n);
+
+	for (n = 0; *h; n++)
+		t = *h, *h = (*h)->next, free(t);
 
 	*h = NULL;
-	return (count);
+
+	return (n);
 }
