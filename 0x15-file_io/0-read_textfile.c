@@ -1,46 +1,43 @@
-#include "main.h"
+#include "holberton.h"
 
 /**
- * read_textfile - read a text file and print it to stdout
- * @filename: the name of the file to read
- * @letters: the number of letters to be read and printed
- *
- * Return: If filename is NULL, the file cannot be opened or read.
+ * read_textfile - reads a text file and prints contents the POSIX stdout.
+ * @filename: the file to open.
+ * @letters: number of letters it should read and print.
+ * Return: number of letters it could read and print, or 0 if:
  */
 ssize_t read_textfile(const char *filename, size_t letters)
 {
-	char *buffer = NULL;
-	ssize_t b_read;
-	ssize_t b_written;
-	int fd;
+	int file_descriptor = -1;
+	ssize_t output = 0;
+	char *buffer;
 
-	if (!(filename && letters))
+	if (!filename)
 		return (0);
 
-	fd = open(filename, O_RDONLY);
-	if (fd == -1)
+	file_descriptor = open(filename, O_RDONLY);
+	if (file_descriptor < 0)
 		return (0);
 
 	buffer = malloc(sizeof(char) * letters);
 	if (!buffer)
-		return (0);
-
-	b_read = read(fd, buffer, letters);
-	close(fd);
-
-	if (b_read < 0)
 	{
-		free(buffer);
+		close(file_descriptor);
 		return (0);
 	}
-	if (!b_read)
-		b_read = letters;
 
-	b_written = write(STDOUT_FILENO, buffer, b_read);
-	free(buffer);
-
-	if (b_written < 0)
+	output = read(file_descriptor, buffer, letters);
+	if (output < 0)
+	{
+		free(buffer);
+		close(file_descriptor);
 		return (0);
+	}
 
-	return (b_written);
+	output = write(STDOUT_FILENO, buffer, output);
+	free(buffer);
+	close(file_descriptor);
+	if (output < 0)
+		return (0);
+	return (output);
 }
