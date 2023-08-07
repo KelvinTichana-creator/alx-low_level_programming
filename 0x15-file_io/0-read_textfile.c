@@ -1,37 +1,52 @@
-#include <stdio.h>
+#include <unistd.h>
+#include <fcntl.h>
 #include <stdlib.h>
-#include "main.h"
 
 /**
- * read_textfile - Reads a text file and prints its contents to stdout
- * @filename: Pointer to the name of the text file.
- * @letters: Number of letters to read and print.
- * Return: Number of letters read and printed, or 0 on failure.
+ * read_textfile - Reads and prints text from a file.
+ *
+ * @filename: Name of the file.
+ * @letters: Number of characters to read.
+ *
+ * Return: Actual number of letters read, 0 if end of file or on failure.
  */
 ssize_t read_textfile(const char *filename, size_t letters)
 {
-	ssize_t file, let, w;
-	char *text;
+	int file_descriptor;
+	int read_chars;
+	char *buffer;
 
-	if (filename == NULL)
+	if (filename == NULL || letters == 0)
 		return (0);
 
-	text = malloc(letters);
-	if (text == NULL)
+	buffer = malloc(sizeof(char) * letters);
+	if (buffer == NULL)
 		return (0);
 
-	file = open(filename, O_RDONLY);
-	if (file == -1)
+	file_descriptor = open(filename, O_RDONLY);
+	if (file_descriptor == -1)
 	{
-		free(text);
+		free(buffer);
 		return (0);
 	}
 
-	let = read(file, text, letters);
-	w = write(STDOUT_FILENO, text, let);
+	read_chars = read(file_descriptor, buffer, letters);
+	if (read_chars == -1)
+	{
+		free(buffer);
+		close(file_descriptor);
+		return (0);
+	}
 
-	close(file);
-	free(text);
+	if (write(STDOUT_FILENO, buffer, read_chars) != read_chars)
+	{
+		free(buffer);
+		close(file_descriptor);
+		return (0);
+	}
 
-	return (w);
+	free(buffer);
+	close(file_descriptor);
+	return (read_chars);
 }
+
