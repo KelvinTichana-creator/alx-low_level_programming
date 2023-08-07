@@ -1,46 +1,46 @@
 #include "main.h"
 
 /**
- * read_textfile - function to read txt file
- * @filename: file
- * @letters: number of letters
- * Return: 0 if filename is NULL or write fails
+ * read_textfile - read a text file and print it to stdout
+ * @filename: the name of the file to read
+ * @letters: the number of letters to be read and printed
+ *
+ * Return: If filename is NULL, the file cannot be opened or read.
  */
 ssize_t read_textfile(const char *filename, size_t letters)
 {
-	int fd = 0;
-	int reader = 0;
-	int output = 0;
-	char *buffer;
+	char *buffer = NULL;
+	ssize_t b_read;
+	ssize_t b_written;
+	int fd;
 
-	if (filename == NULL)
-		return (0);
-
-	buffer = malloc(letters);
-	if (buffer == NULL)
+	if (!(filename && letters))
 		return (0);
 
 	fd = open(filename, O_RDONLY);
 	if (fd == -1)
-	{
-		free(buffer);
 		return (0);
-	}
 
-	reader = read(fd, buffer, letters);
-	if (reader == -1)
-	{
-		free(buffer);
+	buffer = malloc(sizeof(char) * letters);
+	if (!buffer)
 		return (0);
-	}
 
-	output = write(STDOUT_FILENO, buffer, reader);
-	if (output == -1 || output != reader)
-	{
-		free(buffer);
-		return (0);
-	}
+	b_read = read(fd, buffer, letters);
 	close(fd);
+
+	if (b_read < 0)
+	{
+		free(buffer);
+		return (0);
+	}
+	if (!b_read)
+		b_read = letters;
+
+	b_written = write(STDOUT_FILENO, buffer, b_read);
 	free(buffer);
-	return (output);
+
+	if (b_written < 0)
+		return (0);
+
+	return (b_written);
 }
