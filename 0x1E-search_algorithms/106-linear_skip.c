@@ -1,48 +1,44 @@
 #include "search_algos.h"
 
 /**
- * jump_list - searches for a value in a sorted array of integers
- *				using the Jump search algorithm
- * @list: pointer to the head of the list
- * @size: size of list
- * @value: int value we are looking for
- * Return: Null or value index pointer
+ * linear_skip - searches for a value in a skip list
+ *
+ * @list: input list
+ * @value: value to search in
+ * Return: index of the number
  */
-listint_t *jump_list(listint_t *list, size_t size, int value)
+skiplist_t *linear_skip(skiplist_t *list, int value)
 {
-	size_t j, i;
-	listint_t *l, *r;
+	skiplist_t *go;
 
-	if (list == NULL || size == 0)
+	if (list == NULL)
 		return (NULL);
 
-	l = list;
-	j = sqrt(size);
-	r = l;
-	while (1)
-	{
+	go = list;
 
-		for (i = 0; i < j && r; i++)
-		{
-			if (r->next)
-				r = r->next;
-		}
-		printf("Value checked at index [%ld] = [%d]\n", r->index, r->n);
-		if (r->index == size - 1 || r->n >= value)
-			break;
-		else if (r->n < value)
-			l = r;
-	}
-	printf("Value found between indexes [%ld] and [%ld]\n", l->index, r->index);
-	while (1)
+	do {
+		list = go;
+		go = go->express;
+		printf("Value checked at index ");
+		printf("[%d] = [%d]\n", (int)go->index, go->n);
+	} while (go->express && go->n < value);
+
+	if (go->express == NULL)
 	{
-		printf("Value checked at index [%ld] = [%d]\n", l->index, l->n);
-		if (l->n == value)
-			return (l);
-		if (r == l)
-			break;
-		if (l->next)
-			l = l->next;
+		list = go;
+		while (go->next)
+			go = go->next;
+	}
+
+	printf("Value found between indexes ");
+	printf("[%d] and [%d]\n", (int)list->index, (int)go->index);
+
+	while (list != go->next)
+	{
+		printf("Value checked at index [%d] = [%d]\n", (int)list->index, list->n);
+		if (list->n == value)
+			return (list);
+		list = list->next;
 	}
 
 	return (NULL);
